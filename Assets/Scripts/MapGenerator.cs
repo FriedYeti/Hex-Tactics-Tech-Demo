@@ -14,6 +14,13 @@ public class MapGenerator : MonoBehaviour {
 
     public Vector2 noiseOrigin;
 
+    public GameObject playerPrefab;
+    public Transform playerParent;
+    public GameObject enemyPrefab;
+    public Transform enemyParent;
+
+    private TurnManager turnManager;
+
     private void Awake() {
         this.mapOrigin = gameObject.transform.position;
         map = new HexGrid(mapSize, new Layout(Orientation.pointy, unitSize, mapOrigin));
@@ -39,5 +46,53 @@ public class MapGenerator : MonoBehaviour {
                 tile.SetHexTile(newHex);
             }
         }
+    }
+
+    private void Start() {
+        turnManager = FindObjectOfType<TurnManager>();
+        //turnManager.playerTurnEnded += AddUnitsToTurnManager;
+
+        CreatePlayerUnit();
+        CreatePlayerUnit();
+        CreatePlayerUnit();
+
+        //AddUnitsToTurnManager();
+    }
+
+    private void AddUnitsToTurnManager() {
+        Transform[] playerUnits = playerParent.GetComponentsInChildren<Transform>();
+        if (playerUnits.Length > 0) {
+            foreach (Transform playerUnit in playerUnits) {
+                turnManager.AddUnitToQueue(playerUnit);
+            }
+        }
+        Transform[] enemyUnits = enemyParent.GetComponentsInChildren<Transform>();
+        if (enemyUnits.Length > 0) {
+            foreach (Transform enemyUnit in enemyUnits) {
+                turnManager.AddUnitToQueue(enemyUnit);
+            }
+        }
+    }
+
+    private void CreatePlayerUnit() {
+        Hex startingHex = map.GetRandomHex();
+        while (startingHex.GetTileInfo().isBlocked || startingHex.GetTileInfo().isOccupied) {
+            startingHex = map.GetRandomHex();
+        }
+        Vector3 pos = map.HexToWorld(startingHex);
+        GameObject newPlayer = Object.Instantiate(playerPrefab, pos + startingHex.GetTileInfo().unitOffset, Quaternion.identity, playerParent);
+        newPlayer.GetComponent<Unit>().SetCurrentTile(startingHex);
+        newPlayer.GetComponent<Unit>().speed = Random.Range(1, 11);
+    }
+
+    private void CreateEnemyUnit() {
+        Hex startingHex = map.GetRandomHex();
+        while (startingHex.GetTileInfo().isBlocked || startingHex.GetTileInfo().isOccupied) {
+            startingHex = map.GetRandomHex();
+        }
+        Vector3 pos = map.HexToWorld(startingHex);
+        GameObject newEnemy = Object.Instantiate(enemyPrefab, pos + startingHex.GetTileInfo().unitOffset, Quaternion.identity, enemyParent);
+        newEnemy.GetComponent<Unit>().SetCurrentTile(startingHex);
+        newEnemy.GetComponent<Unit>().speed = Random.Range(1, 11);
     }
 }

@@ -1,12 +1,14 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+
 public class UIControl : MonoBehaviour {
 
-    public Player player;
+    public TurnManager turnManager;
     public Text turnCounterText;
     private int turnCounter = 0;
 
@@ -16,8 +18,8 @@ public class UIControl : MonoBehaviour {
     }
 
     public void EndTurn() {
-        turnCounter++;
-        player.EndTurn();
+        turnManager.EndTurn();
+        turnCounter = turnManager.turnCounter;
     }
 
     private void Update() {

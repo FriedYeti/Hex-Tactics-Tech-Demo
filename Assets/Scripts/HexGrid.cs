@@ -58,14 +58,16 @@ public class HexGrid {
         frontier.Enqueue(0, startingHex);
         Dictionary<Hex, int> costSoFar = new Dictionary<Hex, int>();
         Dictionary<Hex, Hex> cameFrom = new Dictionary<Hex, Hex>();
-        costSoFar[startingHex] = 0;
+        if (!UnityEngine.Object.ReferenceEquals(startingHex, null)) {
+            costSoFar[startingHex] = 0;
+        }
         while(!frontier.Empty()) {
             Hex currentHex = frontier.Dequeue();
             List<Hex> hexNeighbors = GetHexNeighbors(currentHex);
             if (hexNeighbors.Count > 0) {
                 foreach (Hex nextHex in hexNeighbors) {
                     int newCost = costSoFar[currentHex] + nextHex.GetTileInfo().movementCost;
-                    if ((!costSoFar.ContainsKey(nextHex) || newCost < costSoFar[nextHex]) && newCost < movementRange) {
+                    if ((!costSoFar.ContainsKey(nextHex) || newCost < costSoFar[nextHex]) && newCost < movementRange && !(nextHex.GetTileInfo().isBlocked || nextHex.GetTileInfo().isOccupied)) {
                         costSoFar[nextHex] = newCost;
                         int newPriority = newCost;
                         frontier.Enqueue(newPriority, nextHex);
@@ -413,4 +415,10 @@ public struct FractionalHex {
         return results;
     }
 
+}
+
+public static class HexUtil {
+    public static Vector3 CubeLerp(Vector3 a, Vector3 b, float t) {
+        return new Vector3(Mathf.Lerp(a.x, b.x, t), Mathf.Lerp(a.y, b.y, t), Mathf.Lerp(a.z, b.z, t));
+    }
 }

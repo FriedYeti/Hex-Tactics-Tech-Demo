@@ -16,4 +16,4 @@ Full list of features implemented:
 
 A playable demo is available on [itch.io](https://friedyeti.itch.io/hex-tactics-tech-demo).
 
-The hexagonal grid and the pathfinding are based off of the articles from [Red Block Games](https://www.redblobgames.com/).
+The hexagonal grid and the pathfinding are based off of the articles from [Red Blob Games](https://www.redblobgames.com/).
